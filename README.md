@@ -1,13 +1,7 @@
-# chat-example
+# This was taken from the socketio chat example and extended into a quiz
 
-This is the source code for a very simple chat example used for
-the [Getting Started](http://socket.io/get-started/chat/) guide
-of the Socket.IO website.
+It uses index.js with node to start the web server.
 
-Please refer to it to learn how to run this application.
+It uses timer.py to listen for question and start a timer - this is the timer to integrate the 'O' with.
 
-You can also spin up a free Heroku dyno to test it out:
-
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/socketio/chat-example)
-
-Besides, the application is deployed on [Now](https://zeit.co/now): https://socketio-chat-example.now.sh/
+Further work will be a question server.
