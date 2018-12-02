@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; font-size: xx-large;}
+      body { font: 13px Helvetica, Arial; }
+      form { background: #000; padding: 3px; position: relative; bottom: 0; width: 100%; }
+      form input { border: 0px; padding: 100px; width: 70%; margin-right: .5%;}
+      form button { height: 19%; width: 25%; background: rgb(255, 128, 128); border: none; padding: 99px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; font-size: xx-large;}
+      #messages li:nth-child(odd) { background: #eee; }
+      #messages { margin-bottom: 40px }
+      .question {font-size: x-large;}
+      .pressed {background: rgb(0,255,0);  font-size: x-large; color: red;}
+      .chat {background: rgb(128,128,255);}
+    </style>
+  </head>
+  <body>
+    <form id='answer' action="">
+      <input id="a" autocomplete="off" value="me first" /><button id='brb'>ANSWER</button>
+    </form>
+    <form id='chatter' action="">
+      <input id="m" autocomplete="off" /><button class='chat'>CHAT</button>
+    </form>
+
+    <h2>Questions</h2>
+    <ul id="questions"></ul>
+
+
+    <h2>Chat Messages</h2>
+    <ul id="messages"></ul>
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+      var brb_pressed = false; // used to limit number times the brb can be pressed
+
+      $(function () {
+        var socket = io();
+        $('#chatter').submit(function(){
+          console.log("Chatter");
+          socket.emit('chat message', $('#m').val());
+          $('#m').val('');
+          return false;
+        });
+
+        $('#answer').submit(function(evt){
+          console.log("Answer");
+          if (brb_pressed == false) {
+            brb_pressed = true;
+            socket.emit('answer message', evt.currentTarget[0].value);
+          }
+          $('#brb').addClass('pressed');
+          $('#questions').append($('<li class="pressed">').text('PRESSED'));
+          return false;
+        });
+
+        socket.on('chat message', function(msg){
+          $('#messages').append($('<li>').text(msg));
+          window.scrollTo(0, document.body.scrollHeight);
+        });
+
+        socket.on('quiz message', function(msg){
+          brb_pressed = false;
+          $('#brb').removeClass('pressed')
+          $('#messages').html('');
+          $('#questions').html('');
+          $('#questions').append($('<li class="question">').text('QUESTION:'+msg));
+          window.scrollTo(0, document.body.scrollHeight);
+        });
+      });
+    </script>
+  </body>
+</html>
