@@ -2,9 +2,10 @@
 # for Ed to add the call to trigger the display
 
 from socketIO_client import SocketIO, LoggingNamespace
-import json
+import json, collections
 
-scores = {}
+scores = {}  # will be populated with scores
+q_pos = 0  # used for keeping track of which question to display
 
 def on_connect():
     print('connect')
@@ -26,14 +27,24 @@ def update_scores(score):
         scores[score.keys()[0]] += score[score.keys()[0]]
     else:
         scores[score.keys()[0]] = score[score.keys()[0]]
-    socketIO.emit('results',scores)
-    print(str(scores))
+    socketIO.emit('results',(dict(sorted(scores.iteritems(), reverse=True, key=lambda (k,v): (v,k)))))
 
 
 def do_score(*args):
-    #socketIO.emit('chat message','Scores Processed')
     print("SCORES:" + str(args[0]))
     update_scores(args[0])
+
+def new_question(*args):
+    print("New Question Request")
+    next_question = question_file.readline()
+    if next_question:
+        socketIO.emit('new question',next_question)
+    else:
+        socketIO.emit('new question','NO MORE QUESTIONS? NOW FOR THE SCORES')
+
+
+
+question_file = open('example-questions.txt','r')
 
 
 socketIO = SocketIO('localhost', 3000, LoggingNamespace)
@@ -49,6 +60,11 @@ socketIO.on('score message', do_score)
 
 print ("Waiting for quiz message")
 socketIO.on('quiz message', do_timer)
+
+print ("Waiting for generate message")
+socketIO.on('generate', new_question)
+
+
 
 while True:
     socketIO.wait(seconds=60)

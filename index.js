@@ -27,6 +27,12 @@ io.on('connection', function(socket){
   socket.on('results', function(msg){
     io.emit('results', msg);
   });
+  socket.on('generate', function(msg){
+    io.emit('generate', msg);
+  });
+  socket.on('new question', function(msg){
+    io.emit('new question', msg);
+  });
 });
 
 http.listen(port, function(){
