@@ -7,6 +7,11 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/player', function(req, res){
+  res.sendFile(__dirname + '/index.html');
+});
+
+
 app.get('/qm', function(req, res){
   res.sendFile(__dirname + '/qm.html');
 });
@@ -32,6 +37,9 @@ io.on('connection', function(socket){
   });
   socket.on('new question', function(msg){
     io.emit('new question', msg);
+  });
+  socket.on('display', function(msg){
+    io.emit('display', msg);
   });
 });
 

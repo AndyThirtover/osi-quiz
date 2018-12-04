@@ -1,31 +1,36 @@
 <!doctype html>
 <html>
   <head>
-    <title>Socket.IO chat</title>
+    <title>Quiz Master Interface</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; font-size: xx-large; }
       body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: relative; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
+      form { padding: 3px; position: relative; bottom: 0; width: 100%; overflow: auto; border-style: solid;}
+      form input { border: 0; padding: 10px; width: 80%;}
+      form button { width: 300px; background: rgb(130, 224, 255); border: none; padding: 50px; float:right; border-style: solid; font-weight: bolder;}
+      #messages { list-style-type: none; margin: 0; padding: 0;}
       #messages li { padding: 5px 10px; }
       #messages li:nth-child(odd) { background: #eee; }
       #messages, #quizzers { margin-bottom: 40px;}
       .quizzers {color: green;}
+      .quizzers:nth-child(odd){border-color: rgb(255,192,192);}
       #q {color: blue;}
       #a {color: red;}
+      .brb {height: 140px; width : 300px; float: right; color: red; font-weight: bolder; padding: 5px; background: rgb(130, 224, 255); border-style: solid;}
+      .fullwidth{width: 100%; overflow: auto;}
+      .result {padding-right: 30px;}
+      .result:nth-child(odd) {background-color: rgb(192,255,192);}
     </style>
   </head>
   <body>
     <h1>The Quiz Masters Page</h1>
 
     <table>
-      <tr>
-        <td>
+      <tr class='fullwidth'>
+        <td class='fullwidth'>
           [NEW QUESTION] to get a question, [ASK] to send to Quizzers
-        <td>
-          <button onClick="get_question()"> NEW QUESTION </button>
+        <td class='fullwidth'>
+          <button class='brb' onClick="get_question()"> NEW QUESTION </button>
         </td>
       </tr>
     </table>
@@ -41,13 +46,13 @@
 
 
     <h2>Who Answered</h2>
-    <ul id="quizzers"></ul>
+    <div id="quizzers"></div>
 
     <h2>Chat Messages</h2>
     <ul id="messages"></ul>
 
     <h2>Results</h2>
-    <ul id="results"></ul>
+    <div id="results"></div>
 
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
@@ -82,13 +87,13 @@
         });
         socket.on('answer message', function(msg){
           quiz_action = msg + ' <button onclick="reward(\'' + msg + '\')"> Reward </button> <button onclick="revoke(\'' + msg + '\')"> Revoke </button>' ;
-          $('#quizzers').append($('<li class="quizzers">').html(quiz_action));
+          $('#quizzers').append($('<span class="quizzers">').html(quiz_action));
           window.scrollTo(0, document.body.scrollHeight);
         });
         socket.on('new question', function(msg){
           console.log("New Quesion: " + msg);
           parts = msg.split('?');
-          $('#q').val(parts[0]);
+          $('#q').val(parts[0]+'?');
           $('#a').val(parts[1]);          
           window.scrollTo(0, document.body.scrollHeight);
         });
@@ -96,7 +101,7 @@
         socket.on('results', function(msg){
           $('#results').html('');
           jQuery.each(msg, function(i, val) {
-          $('#results').append($('<li>').text(i +" :: " + val));
+          $('#results').append($('<span class="result">').text(i +":" + val));
           });
         });
 

@@ -18,9 +18,9 @@ def on_reconnect():
 
 def do_timer(*args):
     print("QUIZ: " + str(args))
-    socketIO.emit('chat message','WAIT FOR IT ...')
+    socketIO.emit('display','countdown')
     socketIO.wait(seconds=3)
-    socketIO.emit('chat message','NOW ANSWER ...')
+    socketIO.emit('display','stop')
 
 def update_scores(score):
     if score.keys()[0] in scores:
