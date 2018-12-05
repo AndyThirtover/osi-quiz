@@ -2,25 +2,7 @@
 <html>
   <head>
     <title>Quiz Master Interface</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; font-size: xx-large; }
-      body { font: 13px Helvetica, Arial; }
-      form { padding: 3px; position: relative; bottom: 0; width: 100%; overflow: auto; border-style: solid;}
-      form input { border: 0; padding: 10px; width: 80%;}
-      form button { width: 300px; background: rgb(130, 224, 255); border: none; padding: 50px; float:right; border-style: solid; font-weight: bolder;}
-      #messages { list-style-type: none; margin: 0; padding: 0;}
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
-      #messages, #quizzers { margin-bottom: 40px;}
-      .quizzers {color: green;}
-      .quizzers:nth-child(odd){border-color: rgb(255,192,192);}
-      #q {color: blue;}
-      #a {color: red;}
-      .brb {height: 140px; width : 300px; float: right; color: red; font-weight: bolder; padding: 5px; background: rgb(130, 224, 255); border-style: solid;}
-      .fullwidth{width: 100%; overflow: auto;}
-      .result {padding-right: 30px;}
-      .result:nth-child(odd) {background-color: rgb(192,255,192);}
-    </style>
+    <link rel="stylesheet" type="text/css" href="css">
   </head>
   <body>
     <h1>The Quiz Masters Page</h1>
@@ -37,11 +19,11 @@
 
 
     <form id='quiz' action="">
-      <input id="q" autocomplete="off" value="Get New Question" /><button>ASK</button>
-      <input id='a' autocomplete="off" value="Press the New Question Button above"/>
+      <input id="q" autocomplete="off" value="Get New Question" /><button id='ask'>ASK</button>
+      <input id='ans' autocomplete="off" value="Press the New Question Button above"/>
     </form>
     <form id='chatter' action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
+      <input id="m" autocomplete="off" value="chat stuff"/><button>Send</button>
     </form>
 
 
@@ -54,8 +36,8 @@
     <h2>Results</h2>
     <div id="results"></div>
 
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="socket"></script>
+    <script src="jquery"></script>
     <script>
       var socket = io();
 
@@ -75,6 +57,9 @@
           socket.emit('quiz message', evt.currentTarget[0].value);
           $('#quizzers').html('');
           $('#messages').html('');
+          $('#ask').removeClass('ready');
+          $('#ask').addClass('pressed');
+          $('#ask').text('ASKED');
           return false;
         });
         socket.on('chat message', function(msg){
@@ -94,7 +79,9 @@
           console.log("New Quesion: " + msg);
           parts = msg.split('?');
           $('#q').val(parts[0]+'?');
-          $('#a').val(parts[1]);          
+          $('#ans').val(parts[1]);          
+          $('#ask').addClass('ready');
+          $('#ask').text('READY');
           window.scrollTo(0, document.body.scrollHeight);
         });
 
@@ -121,6 +108,7 @@
 
       function get_question(){
         socket.emit('generate','new') ;
+        $('#ask').removeClass('pressed');
       }
 
 

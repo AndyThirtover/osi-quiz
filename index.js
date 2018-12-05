@@ -6,14 +6,20 @@ var port = process.env.PORT || 3000;
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
-
 app.get('/player', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
-
-
 app.get('/qm', function(req, res){
   res.sendFile(__dirname + '/qm.html');
+});
+app.get('/css', function(req, res){
+  res.sendFile(__dirname + '/style.css');
+});
+app.get('/socket', function(req, res){
+  res.sendFile(__dirname + '/socket.io.js');
+});
+app.get('/jquery', function(req, res){
+  res.sendFile(__dirname + '/jquery.js');
 });
 
 io.on('connection', function(socket){

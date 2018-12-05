@@ -2,29 +2,16 @@
 <html>
   <head>
     <title>Quizzer Interface</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; font-size: xx-large;}
-      body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: relative; bottom: 0; width: 100%; }
-      form input { width: 45%; border: 0px; padding: 50px; margin-right: 0%;}
-      form button { width: 300px; background: rgb(255, 128, 128); border: none; padding: 50px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; font-size: xx-large;}
-      #messages li:nth-child(odd) { background: #eee; }
-      #messages { margin-bottom: 40px ;}
-      h2 {background-color: rgb(224,224,224);}
-      .question {font-size: xx-large; color: red; background-color: rgb(128,255,128);}
-      .pressed {background: rgb(0,255,0);  font-size: xx-large; color: red;}
-      .chat {background: rgb(128,128,255);}
-      #a {font-weight: bolder;}
-    </style>
+    <link rel="stylesheet" type="text/css" href="css">
   </head>
   <body>
     <form id='answer' action="">
-      <input id="a" autocomplete="off" value="Put Your Name Here" /><button id='brb'>ANSWER</button>
+      <input id="a" autocomplete="off" value="YourName" />
+      <button id='answer_button'>SET NAME</button>
     </form>
     <form id='chatter' action="">
-      <input id="m" autocomplete="off" /><button class='chat'>CHAT</button>
+      <input id="m" autocomplete="off" />
+      <button class='chat'>CHAT</button>
     </form>
 
     <h2>Questions</h2>
@@ -33,8 +20,8 @@
     <h2>Chat Messages</h2>
     <ul id="messages"></ul>
 
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="socket"></script>
+    <script src="jquery"></script>
     <script>
       var brb_pressed = false; // used to limit number times the brb can be pressed
 
@@ -52,8 +39,8 @@
           if (brb_pressed == false) {
             brb_pressed = true;
             socket.emit('answer message', evt.currentTarget[0].value);
-            $('#brb').addClass('pressed');
-            //$('#questions').append($('<li class="pressed">').text('PRESSED'));
+            $('#answer_button').addClass('pressed');
+            $('#answer_button').text('PRESSED');
           }
           return false;
         });
@@ -65,7 +52,8 @@
 
         socket.on('quiz message', function(msg){
           brb_pressed = false;
-          $('#brb').removeClass('pressed')
+          $('#answer_button').removeClass('pressed')
+          $('#answer_button').text('ANSWER');
           $('#messages').html('');
           $('#questions').html('');
           $('#questions').append($('<li class="question">').text('QUESTION:'+msg));
