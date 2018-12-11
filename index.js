@@ -1,54 +1,49 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var express = require("express");
+var app = express();
+var http = require("http").Server(app);
+var io = require("socket.io")(http);
+var fs = require("fs");
+
+app.use(express.static("public"));
+
+var questions = fs.readFileSync("example-questions.txt", "utf8").split(/\r?\n/);
+var scores = {};
+var question_index = 0;
+
+io.on("connection", function(socket) {
+  socket.on("reset all", function() {
+    scores = {};
+    question_index = 0;
+    io.emit("results", scores);
+  });
+  socket.on("answer message", function(userName) {
+    socket.broadcast.emit("answer message", userName);
+  });
+  socket.on("quiz message", function(question) {
+    io.emit("quiz message", question);
+  });
+  socket.on("score message", function(score) {
+    // score = {'userName':1} or {'userName':-1}
+    socket.broadcast.emit("score message", score);
+    var userName = Object.keys(score)[0];
+    scores[userName] = scores[userName] || 0;
+    scores[userName] += score[userName];
+    io.emit("results", scores);
+  });
+  socket.on("results", function(msg) {
+    io.emit("results", msg);
+  });
+  socket.on("generate", function() {
+    if (question_index < questions.length) {
+      io.emit("new question", questions[question_index]);
+      question_index += 1;
+    } else {
+      io.emit("new question", "NO MORE QUESTIONS? NOW FOR THE SCORES");
+    }
+  });
+});
+
 var port = process.env.PORT || 3000;
-
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
-});
-app.get('/player', function(req, res){
-  res.sendFile(__dirname + '/index.html');
-});
-app.get('/qm', function(req, res){
-  res.sendFile(__dirname + '/qm.html');
-});
-app.get('/css', function(req, res){
-  res.sendFile(__dirname + '/style.css');
-});
-app.get('/socket', function(req, res){
-  res.sendFile(__dirname + '/socket.io.js');
-});
-app.get('/jquery', function(req, res){
-  res.sendFile(__dirname + '/jquery.js');
-});
-
-io.on('connection', function(socket){
-  socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
-  });
-  socket.on('answer message', function(msg){
-    io.emit('answer message', msg);
-  });
-  socket.on('quiz message', function(msg){
-    io.emit('quiz message', msg);
-  });
-  socket.on('score message', function(msg){
-    io.emit('score message', msg);
-  });
-  socket.on('results', function(msg){
-    io.emit('results', msg);
-  });
-  socket.on('generate', function(msg){
-    io.emit('generate', msg);
-  });
-  socket.on('new question', function(msg){
-    io.emit('new question', msg);
-  });
-  socket.on('display', function(msg){
-    io.emit('display', msg);
-  });
-});
-
-http.listen(port, function(){
-  console.log('listening on *:' + port);
+http.listen(port, function() {
+  console.log("listening on *:" + port);
 });

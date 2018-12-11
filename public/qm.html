@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Quiz Master Interface</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <meta name="viewport" content="width=device-width" />
+    <style>
+      .quizzers {
+        color: green;
+      }
+      #question {
+        color: blue;
+      }
+      #answer {
+        color: red;
+      }
+      .centered {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>The Quiz Masters Page</h1>
+
+    <div class="centered">
+      <button onClick="getQuestion()">NEW QUESTION</button>
+      <div id="question">
+        [NEW QUESTION] to get a question, [ASK] to send to Quizzers
+      </div>
+      <div id="answer"></div>
+
+      <button id="ask" onclick="askQuestion()">ASK</button>
+    </div>
+
+    <h2>Who Answered</h2>
+    <ul id="quizzers"></ul>
+
+    <h2>Results</h2>
+    <div id="results"></div>
+
+    <button onClick="resetAll()" class="reset">RESET ALL</button>
+
+    <script src="socket.io.js"></script>
+    <script src="jquery.js"></script>
+    <script>
+      var socket = io();
+      var question;
+
+      socket.on("answer message", function(username) {
+        var li = $('<li class="quizzers">');
+        li.append(username);
+        li.append(
+          $("<button/>", {
+            text: "Reward",
+            class: "small",
+            click: function() {
+              reward(username);
+            }
+          })
+        );
+        li.append(
+          $("<button/>", {
+            text: "Revoke",
+            class: "small",
+            click: function() {
+              revoke(username);
+            }
+          })
+        );
+        $("#quizzers").append(li);
+      });
+
+      socket.on("new question", function(questionText) {
+        var parts = questionText.split("?");
+        question = parts[0].trim();
+        $("#question").text("Q: " + question + "?");
+        $("#answer").text("A: " + parts[1].trim());
+        $("#ask").removeAttr("disabled");
+        $("#ask").text("ASK");
+      });
+
+      socket.on("results", function(scores) {
+        $("#results").html("");
+        jQuery.each(scores, function(i, val) {
+          $("#results").append($('<span class="result">').text(i + ": " + val));
+        });
+      });
+
+      function askQuestion() {
+        socket.emit("quiz message", question);
+        $("#quizzers").html("");
+        $("#ask").attr("disabled", "disabled");
+        $("#ask").text("ASKED");
+      }
+
+      function reward(person) {
+        var score = {};
+        score[person] = 1;
+        socket.emit("score message", score);
+      }
+
+      function revoke(person) {
+        var score = {};
+        score[person] = -1;
+        socket.emit("score message", score);
+      }
+
+      function getQuestion() {
+        socket.emit("generate", "new");
+      }
+
+      function resetAll() {
+        var message =
+          "Are you sure you want to reset the scores and the question list?";
+        if (window.confirm(message)) {
+          socket.emit("reset all");
+          $("#quizzers").html("");
+        }
+        window.location = window.location;
+      }
+    </script>
+  </body>
+</html>

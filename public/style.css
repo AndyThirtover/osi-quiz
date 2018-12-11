@@ -1,0 +1,49 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: xx-large;
+}
+body {
+  font: 24px Helvetica, Arial;
+}
+form input {
+  border: 0;
+  padding: 10px;
+  width: 80%;
+}
+button {
+    border-style: solid;
+}
+button.small {
+    font-size: 20px;
+}
+button.large {
+  width: 100%;
+  background: #199dd9;
+  border: none;
+  padding: 50px;
+  font-weight: bolder;
+}
+button.reset {
+  padding: 5px;
+  background: red;
+  font-weight: normal;
+}
+h2 {
+  margin: 10px 0 10px 0;
+  padding: 10px;
+  background-color: rgb(224, 224, 224);
+}
+.result {
+  padding-right: 10px;
+  font-size: 14px;
+}
+.result:nth-child(odd) {
+  background-color: lightgray;
+}
+.pressed {
+  background: rgb(255, 128, 128);
+  font-size: xx-large;
+  color: red;
+}

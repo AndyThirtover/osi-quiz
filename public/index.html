@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Quizzer Interface</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <meta name="viewport" content="width=device-width" />
+    <style>
+      div#question {
+        min-height: 100px;
+        margin: 30 auto 30 auto;
+      }
+      .question {
+        font-size: xx-large;
+        font-weight: bold;
+        color: red;
+      }
+      #logo {
+        background: url(osirium-logo-colour.svg) no-repeat top center;
+        height: 100px;
+        margin: 10px auto 20px auto;
+        width: 95%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="logo"></div>
+    <h2>Here's the question:</h2>
+    <div id="question">
+      <ul id="questions">
+        <li>Wait for it...</li>
+      </ul>
+    </div>
+    <button
+      id="answer_button"
+      onclick="answer()"
+      disabled="disabled"
+      class="large"
+    >
+      ANSWER
+    </button>
+    <div id="results"></div>
+
+    <script src="socket.io.js"></script>
+    <script src="jquery.js"></script>
+    <script>
+      var userName = prompt("Please enter your name", "");
+      var answered = false;
+      var socket = io();
+
+      $(function() {
+        socket.on("quiz message", function(question) {
+          answered = false;
+          $("#answer_button").removeAttr("disabled");
+          $("#answer_button").removeClass("pressed");
+          $("#answer_button").text("ANSWER");
+          $("#questions").html("");
+          $("#questions").append($('<li class="question">').text(question));
+        });
+
+        socket.on("results", function(scores) {
+          $("#results").html("");
+          jQuery.each(scores, function(i, val) {
+            $("#results").append(
+              $('<span class="result">').text(i + ": " + val)
+            );
+          });
+        });
+      });
+      function answer() {
+        if (!answered) {
+          answered = true;
+          socket.emit("answer message", userName);
+          $("#answer_button").addClass("pressed");
+          $("#answer_button").attr("disabled", "disabled");
+          $("#answer_button").text("ANSWERED");
+        }
+      }
+    </script>
+  </body>
+</html>
