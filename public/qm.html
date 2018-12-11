@@ -36,8 +36,7 @@
     <ul id="quizzers"></ul>
 
     <h2>Results</h2>
-    <div id="results"></div>
-
+    <div><ul id="results"></ul></div>
     <button onClick="resetAll()" class="reset">RESET ALL</button>
 
     <script src="socket.io.js"></script>
@@ -79,10 +78,14 @@
         $("#ask").text("ASK");
       });
 
-      socket.on("results", function(scores) {
+      socket.on("results", function(sortedScoreStore) {
         $("#results").html("");
-        jQuery.each(scores, function(i, val) {
-          $("#results").append($('<span class="result">').text(i + ": " + val));
+        jQuery.map(sortedScoreStore, function(scoreUsers) {
+          $("#results").append(
+            $('<li class="result">').text(
+              scoreUsers.score + ": " + scoreUsers.users.join(", ")
+            )
+          );
         });
       });
 

@@ -41,7 +41,7 @@
         PICK ME!
       </button>
     </div>
-    <div id="results"></div>
+    <div><ul id="results"></ul></div>
 
     <script src="socket.io.js"></script>
     <script src="jquery.js"></script>
@@ -59,11 +59,13 @@
           $("#questions").append($('<li class="question">').text(question));
         });
 
-        socket.on("results", function(scores) {
+        socket.on("results", function(sortedScoreStore) {
           $("#results").html("");
-          jQuery.each(scores, function(i, val) {
+          jQuery.map(sortedScoreStore, function(scoreUsers) {
             $("#results").append(
-              $('<span class="result">').text(i + ": " + val)
+              $('<li class="result">').text(
+                scoreUsers.score + ": " + scoreUsers.users.join(", ")
+              )
             );
           });
         });
