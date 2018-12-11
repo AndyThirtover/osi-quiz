@@ -7,7 +7,6 @@
     <style>
       div#question {
         min-height: 100px;
-        margin: 30 auto 30 auto;
       }
       .question {
         font-size: xx-large;
@@ -16,9 +15,16 @@
       }
       #logo {
         background: url(osirium-logo-colour.svg) no-repeat top center;
+        height: 65px;
+        margin: 10px auto;
+      }
+      #answer_button {
+        width: 100%;
         height: 100px;
-        margin: 10px auto 20px auto;
-        width: 95%;
+      }
+      .full_width {
+        width: 100%;
+        text-align: center;
       }
     </style>
   </head>
@@ -30,14 +36,11 @@
         <li>Wait for it...</li>
       </ul>
     </div>
-    <button
-      id="answer_button"
-      onclick="answer()"
-      disabled="disabled"
-      class="large"
-    >
-      ANSWER
-    </button>
+    <div class="full_width">
+      <button id="answer_button" onclick="answer()" disabled="disabled">
+        PICK ME!
+      </button>
+    </div>
     <div id="results"></div>
 
     <script src="socket.io.js"></script>
@@ -51,8 +54,7 @@
         socket.on("quiz message", function(question) {
           answered = false;
           $("#answer_button").removeAttr("disabled");
-          $("#answer_button").removeClass("pressed");
-          $("#answer_button").text("ANSWER");
+          $("#answer_button").text("PICK ME!");
           $("#questions").html("");
           $("#questions").append($('<li class="question">').text(question));
         });
@@ -70,9 +72,8 @@
         if (!answered) {
           answered = true;
           socket.emit("answer message", userName);
-          $("#answer_button").addClass("pressed");
           $("#answer_button").attr("disabled", "disabled");
-          $("#answer_button").text("ANSWERED");
+          $("#answer_button").text("good luck ;)");
         }
       }
     </script>

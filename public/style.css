@@ -12,11 +12,8 @@ form input {
   padding: 10px;
   width: 80%;
 }
-button {
-    border-style: solid;
-}
 button.small {
-    font-size: 20px;
+  font-size: 20px;
 }
 button.large {
   width: 100%;
@@ -31,7 +28,6 @@ button.reset {
   font-weight: normal;
 }
 h2 {
-  margin: 10px 0 10px 0;
   padding: 10px;
   background-color: rgb(224, 224, 224);
 }
@@ -46,4 +42,7 @@ h2 {
   background: rgb(255, 128, 128);
   font-size: xx-large;
   color: red;
+}
+div {
+  padding: 10px;
 }
