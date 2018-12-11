@@ -1,6 +1,6 @@
 # Wait for a quiz question and then kick off a timer
 # for Ed to add the call to trigger the display
-
+import os
 from socketIO_client import SocketIO, LoggingNamespace
 import json, collections
 
@@ -42,8 +42,8 @@ def new_question(*args):
         socketIO.emit('new question','NO MORE QUESTIONS? NOW FOR THE SCORES')
 
 question_file = open('example-questions.txt','r')
-
-socketIO = SocketIO('localhost', 3000, LoggingNamespace)
+port = os.environ.get("PORT", 3000)
+socketIO = SocketIO('localhost', port, LoggingNamespace)
 socketIO.on('connect', on_connect)
 socketIO.emit('chat message','Timer.py connected')
 
