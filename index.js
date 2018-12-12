@@ -32,7 +32,7 @@ io.on("connection", function(socket) {
     var usersByScore = {};
     var scores = [];
     var users = Object.keys(scoreStore);
-    for (var i=0; i<users.length; i++) {
+    for (var i = 0; i < users.length; i++) {
       var user = users[i];
       var score = scoreStore[user];
       if (scores.indexOf(score) < 0) {
@@ -43,7 +43,7 @@ io.on("connection", function(socket) {
     }
     var sortedScores = scores.sort().reverse();
     var sortedScoreStore = [];
-    for (i=0; i<sortedScores.length; i++) {
+    for (i = 0; i < sortedScores.length; i++) {
       var score = sortedScores[i];
       sortedScoreStore.push({
         score: score,
@@ -55,8 +55,12 @@ io.on("connection", function(socket) {
   });
   socket.on("generate", function() {
     if (question_index < questions.length) {
-      io.emit("new question", questions[question_index]);
+      var question = questions[question_index];
       question_index += 1;
+    }
+
+    if (question) {
+      io.emit("new question", question_index + ": " + question);
     } else {
       io.emit("new question", "NO MORE QUESTIONS? NOW FOR THE SCORES");
     }
