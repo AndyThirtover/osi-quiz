@@ -7,13 +7,13 @@ var fs = require("fs");
 app.use(express.static("public"));
 
 var questions = fs.readFileSync("example-questions.txt", "utf8").split(/\r?\n/);
+var remainingQuestions = questions.slice(0);
 var scoreStore = {};
-var question_index = 0;
 
 io.on("connection", function(socket) {
   socket.on("reset all", function() {
     scoreStore = {};
-    question_index = 0;
+    remainingQuestions = questions.slice(0);
     io.emit("results", scoreStore);
   });
   socket.on("answer message", function(userName) {
@@ -41,7 +41,17 @@ io.on("connection", function(socket) {
       usersByScore[score] = usersByScore[score] || [];
       usersByScore[score].push(user);
     }
-    var sortedScores = scores.sort().reverse();
+    var sortedScores = scores.sort(function(a, b) {
+      var intA = parseInt(a);
+      var intB = parseInt(b);
+      if (intA < intB) {
+        return -1;
+      } else if (intA > intB) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }).reverse();
     var sortedScoreStore = [];
     for (i = 0; i < sortedScores.length; i++) {
       var score = sortedScores[i];
@@ -54,13 +64,13 @@ io.on("connection", function(socket) {
     io.emit("results", sortedScoreStore);
   });
   socket.on("generate", function() {
-    if (question_index < questions.length) {
-      var question = questions[question_index];
-      question_index += 1;
+    if (remainingQuestions.length) {
+      var questionIndex = Math.floor(Math.random() * remainingQuestions.length);
+      var question = remainingQuestions.splice(questionIndex, 1)[0];
     }
 
     if (question) {
-      io.emit("new question", question_index + ": " + question);
+      io.emit("new question", question);
     } else {
       io.emit("new question", "NO MORE QUESTIONS? NOW FOR THE SCORES");
     }

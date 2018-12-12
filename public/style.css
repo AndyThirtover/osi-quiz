@@ -12,9 +12,6 @@ form input {
   padding: 10px;
   width: 80%;
 }
-button.small {
-  font-size: 20px;
-}
 button.large {
   width: 100%;
   background: #199dd9;
